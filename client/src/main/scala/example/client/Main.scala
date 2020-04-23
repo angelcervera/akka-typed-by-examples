@@ -4,7 +4,13 @@ import akka.actor.ActorSystem
 import akka.grpc.GrpcClientSettings
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.Source
-import example.api.{CounterService, CounterServiceClient, Empty, Increment}
+import example.api.{
+  CounterService,
+  CounterServiceClient,
+  Empty,
+  Increment,
+  State
+}
 
 import scala.util.{Failure, Success}
 
@@ -31,12 +37,17 @@ object Main extends App {
     case _               => println(help)
   }
 
+  private def stateReport(state: State) =
+    s"Current state: Accumulator [${state.acc}] / Events executed [${state.events}]."
+
   private def increment(i: Long) =
     client
       .inc(Increment(i))
       .onComplete {
-        case Success(_) =>
-          println("Successfully incremented.")
+        case Success(state) =>
+          println(
+            s"Successfully incremented. Current state: ${stateReport(state)}"
+          )
           sys.terminate
         case Failure(e) =>
           sys.log.error("Error incrementing: {}", e.getMessage)
@@ -49,9 +60,7 @@ object Main extends App {
       .get(Empty())
       .onComplete {
         case Success(state) =>
-          println(
-            s"Current state: Accumulator [${state.acc}] / Events executed [${state.events}]."
-          )
+          println(stateReport(state))
           sys.terminate
         case Failure(e) =>
           sys.log.error("Error printing: {}", e.getMessage)
@@ -64,11 +73,13 @@ object Main extends App {
     val reply =
       client
         .incs(Source(range).map(Increment(_)))
-        .runForeach(reply => println(s"Incremented ${reply}"))
+        .runForeach(
+          reply => println(s"Incremented. Current state ${stateReport(reply)}")
+        )
 
     reply
       .onComplete {
-        case Success(_) =>
+        case Success(state) =>
           println(s"Incremented range [${range}].")
           sys.terminate
         case Failure(e) =>

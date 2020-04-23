@@ -14,14 +14,12 @@ message Increment {
     uint64 v = 1;
 }
 
-message Done {
-}
-
 message Empty {
 }
 
 service CounterService {
-    rpc Inc(Increment) returns (Done);
-    rpc Incs (stream Increment) returns (stream Done);
+    rpc Inc(Increment) returns (State);
+    rpc Incs (stream Increment) returns (stream State);
+    rpc IncsOneResponse (stream Increment) returns (State);
     rpc Get(Empty) returns (State);
 }

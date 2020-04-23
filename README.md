@@ -9,6 +9,10 @@ to go ahead with the others.
 > This is a continuation of the [Migrating/Comparision from Akka Classic to Typed ](https://www.acervera.com/blog/2019/11/akka-typed-grpc-persistence/)
 > but removing the Classic implementation part. 
 
+# Posts covering every part:
+- [Migrating/Comparision from Akka Classic to Typed ](https://www.acervera.com/blog/2019/11/akka-typed-grpc-persistence/)
+- [Integrating Akka Streams with Akka Actors Typed ](https://www.acervera.com/blog/2020/04/akka-stream-typed-actors/)
+
 # Current state of this project covers:
 
 - [x] Akka gRPC
@@ -17,9 +21,6 @@ to go ahead with the others.
 - [x] Akka Persistence
 - [ ] Akka Stream Typed
 
-# Posts covering every part:
-- [Migrating/Comparision from Akka Classic to Typed ](https://www.acervera.com/blog/2019/11/akka-typed-grpc-persistence/)
-- [Integrating Akka Streams with Akka Actors Typed ](https://www.acervera.com/blog/2020/04/akka-stream-typed-actors/)
 
 # Services description
 Remind that the idea of this service is not to implement something cool

@@ -13,9 +13,8 @@ object CounterActor {
   trait Event extends Protocol
 
   final case class State(events: Long, acc: Long) extends Reply
-  final case class Done() extends Reply
 
-  final case class Increment(v: Long, ref: ActorRef[Done]) extends Command
+  final case class Increment(v: Long, ref: ActorRef[State]) extends Command
   final case class GetState(replyTo: ActorRef[State]) extends Command
 
   final case class Incremented(v: Long) extends Event
@@ -37,9 +36,9 @@ object CounterActor {
         Effect.none
 
       case Increment(v, replyTo) =>
-        Effect.persist(Incremented(v)).thenRun { _ =>
+        Effect.persist(Incremented(v)).thenRun { state =>
           Thread.sleep(config.getDuration("server.event-delay").toMillis) // Expensive process time simulation.
-          replyTo ! Done()
+          replyTo ! state
         }
     }
 

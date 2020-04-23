@@ -2,7 +2,7 @@ package example
 
 import akka.actor.testkit.typed.scaladsl.ScalaTestWithActorTestKit
 import akka.util.Timeout
-import com.typesafe.config.{ConfigFactory, ConfigValue}
+import com.typesafe.config.ConfigFactory
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike
 
@@ -15,7 +15,7 @@ class CounterActorSpec
 
   implicit val config = testKit.config
 
-  "CounterActorTyped" should {
+  "CounterActor" should {
     "Start with zero" in {
       val counter = testKit.spawn(CounterActor("test_zero"), "test_zero")
       val probe = testKit.createTestProbe[CounterActor.State]()
@@ -26,7 +26,7 @@ class CounterActorSpec
     "Increment and count events processed" in {
       val counter = testKit.spawn(CounterActor("test_zero"), "test_inc")
       val probe = testKit.createTestProbe[CounterActor.State]()
-      val response = testKit.createTestProbe[CounterActor.Done]()
+      val response = testKit.createTestProbe[CounterActor.State]()
       counter ! CounterActor.Increment(10, response.ref)
       counter ! CounterActor.GetState(probe.ref)
       probe.expectMessage(CounterActor.State(1, 10))
@@ -40,7 +40,7 @@ class CounterActorSpec
         .parseString("server.event-delay: 1 milliseconds")
         .withFallback(config)
 
-      val response = testKit.createTestProbe[CounterActor.Done]()
+      val response = testKit.createTestProbe[CounterActor.State]()
 
       val counter = testKit.spawn(
         CounterActor("testing_recovering")(configNoDelay),
