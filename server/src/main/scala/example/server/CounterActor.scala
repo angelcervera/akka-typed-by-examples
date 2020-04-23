@@ -1,5 +1,6 @@
-package example
+package example.server
 
+import akka.actor.typed.scaladsl.Behaviors
 import akka.actor.typed.{ActorRef, Behavior}
 import akka.persistence.typed.PersistenceId
 import akka.persistence.typed.scaladsl.{Effect, EventSourcedBehavior}
@@ -37,7 +38,7 @@ object CounterActor {
 
       case Increment(v, replyTo) =>
         Effect.persist(Incremented(v)).thenRun { state =>
-          Thread.sleep(config.getDuration("server.event-delay").toMillis) // Expensive process time simulation.
+          pi(config.getDuration("server.event-delay").toNanos) // Expensive process time simulation.
           replyTo ! state
         }
     }

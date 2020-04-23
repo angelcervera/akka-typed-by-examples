@@ -6,11 +6,11 @@ import akka.actor.typed.{ActorRef, Scheduler}
 import akka.stream.scaladsl.Source
 import akka.stream.typed.scaladsl.ActorFlow
 import akka.util.Timeout
+import example.api
 import example.api.{Increment, State}
 
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
-import example.{CounterActor, api}
 
 // TODO: Check https://doc.akka.io/docs/akka/2.6/typed/from-classic.html#ask and https://doc.akka.io/docs/akka/2.6/typed/from-classic.html#pipeto
 class CounterServiceImpl(counter: ActorRef[CounterActor.Command])(

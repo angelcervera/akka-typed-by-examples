@@ -1,4 +1,4 @@
-package example
+package example.server
 
 import akka.actor.testkit.typed.scaladsl.ScalaTestWithActorTestKit
 import akka.util.Timeout

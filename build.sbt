@@ -28,7 +28,7 @@ lazy val protobufApi = (project in file("protobuf-api"))
   )
 
 lazy val server = (project in file("server"))
-  .enablePlugins(AkkaGrpcPlugin, JavaAgent, JavaAppPackaging)
+  .enablePlugins(AkkaGrpcPlugin, JavaAgent, JavaAppPackaging, Cinnamon)
   .settings(
     PB.protoSources in Compile += (resourceDirectory in(protobufApi, Compile)).value,
     akkaGrpcGeneratedLanguages := Seq(AkkaGrpc.Scala),
@@ -40,16 +40,30 @@ lazy val server = (project in file("server"))
     mainClass in (Compile, packageBin) := Some(
       "example.server.Main"
     ),
+    cinnamon in run := true,
+    cinnamon in test := true,
     libraryDependencies ++= Seq(
       "com.typesafe.akka" %% "akka-persistence-typed" % akkaVersion,
       "com.typesafe.akka" %% "akka-stream-typed" % akkaVersion,
       "com.typesafe.akka" %% "akka-discovery" % akkaVersion, // Forcing version imported from gRPC
       "org.fusesource.leveldbjni" % "leveldbjni-all" % leveldbVersion,
-      "ch.qos.logback" % "logback-classic" % "1.2.3"
+      "ch.qos.logback" % "logback-classic" % "1.2.3",
+
+      // Telemetry metrics
+      Cinnamon.library.cinnamonCHMetrics,
+      Cinnamon.library.cinnamonAkka,
+      Cinnamon.library.cinnamonAkkaTyped,
+      Cinnamon.library.cinnamonAkkaHttp,
+      Cinnamon.library.cinnamonJvmMetricsProducer,
+      Cinnamon.library.cinnamonPrometheus,
+      Cinnamon.library.cinnamonPrometheusHttpServer,
+      Cinnamon.library.cinnamonAkkaPersistence,
+      Cinnamon.library.cinnamonAkkaStream
     ) ++ Seq(
       "com.typesafe.akka" %% "akka-actor-testkit-typed" % akkaVersion,
       "org.scalatest" %% "scalatest" % scalatestVersion,
-    ).map(_ % "test")
+    ).map(_ % "test"),
+
   )
   .dependsOn(protobufApi)
 
