@@ -16,7 +16,7 @@ lazy val scoptVersion = "3.7.1"
 lazy val commonSettings = Seq(
   version := "0.0.2",
   fork := true,
-  scalaVersion := "2.13.1"
+  scalaVersion := "2.13.2"
 )
 
 lazy val root = Project("root", file("."))
