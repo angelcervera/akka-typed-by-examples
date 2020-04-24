@@ -23,7 +23,12 @@ class CounterServer(actor: ActorRef[CounterActor.Command])(
     system.log.info(s"Starting server to redirect calls to ${actor}")
 
     val counterServiceHandler =
-      CounterServiceHandler.partial(new CounterServiceImpl(actor))
+      CounterServiceHandler.partial(
+        new CounterServiceImpl(
+          actor,
+          config.getString("server.incs-implementation")
+        )
+      )
     // val anotherServiceHandler = ....
 
     val serviceHandlers: HttpRequest => Future[HttpResponse] =

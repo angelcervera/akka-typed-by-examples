@@ -12,11 +12,11 @@ import example.api.{Increment, State}
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
 
-class CounterServiceImpl(counter: ActorRef[CounterActor.Command])(
-  implicit
-  executionContext: ExecutionContext,
-  scheduler: Scheduler
-) extends api.CounterService {
+class CounterServiceImpl(counter: ActorRef[CounterActor.Command],
+                         incsImpl: String)(implicit
+                                           executionContext: ExecutionContext,
+                                           scheduler: Scheduler)
+    extends api.CounterService {
 
   def stateAdapter(state: CounterActor.State): api.State =
     api.State(state.events, state.acc)
@@ -34,7 +34,13 @@ class CounterServiceImpl(counter: ActorRef[CounterActor.Command])(
       .ask[CounterActor.State](replyTo => CounterActor.GetState(replyTo))
       .map(stateAdapter)
 
-  override def incs(in: Source[api.Increment, NotUsed]) = incsActorFlowAsk(in)
+  override def incs(in: Source[api.Increment, NotUsed]) = incsImpl match {
+    case "flow.ask" => incsActorFlowAsk(in)
+    case _ =>
+      throw new IllegalArgumentException(
+        s"${incsImpl} is not an incs implementation"
+      )
+  }
 
   private def incsActorFlowAsk(
     in: Source[api.Increment, NotUsed]
