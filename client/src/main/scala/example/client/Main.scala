@@ -72,7 +72,7 @@ object Main extends App {
 
     val reply =
       client
-        .incs(Source(range).map(Increment(_)))
+        .incs(Source(range).map(Increment(_)).async)
         .runForeach(
           reply => println(s"Incremented. Current state ${stateReport(reply)}")
         )

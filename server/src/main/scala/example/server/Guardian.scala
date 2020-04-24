@@ -8,12 +8,7 @@ object Guardian {
     Behaviors.setup[Nothing] { context =>
       implicit val system = context.system
       implicit val config = system.settings.config
-      val counter =
-        context.spawn(
-          CounterActor("CounterActorId"),
-          "counter",
-          ActorTags("counter-bc")
-        )
+      val counter = CounterActor(context)
       new CounterServer(counter).start();
       Behaviors.empty
     }

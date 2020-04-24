@@ -12,7 +12,6 @@ import example.api.{Increment, State}
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
 
-// TODO: Check https://doc.akka.io/docs/akka/2.6/typed/from-classic.html#ask and https://doc.akka.io/docs/akka/2.6/typed/from-classic.html#pipeto
 class CounterServiceImpl(counter: ActorRef[CounterActor.Command])(
   implicit
   executionContext: ExecutionContext,
@@ -35,14 +34,18 @@ class CounterServiceImpl(counter: ActorRef[CounterActor.Command])(
       .ask[CounterActor.State](replyTo => CounterActor.GetState(replyTo))
       .map(stateAdapter)
 
-  override def incs(
+  override def incs(in: Source[api.Increment, NotUsed]) = incsActorFlowAsk(in)
+
+  private def incsActorFlowAsk(
     in: Source[api.Increment, NotUsed]
   ): Source[api.State, NotUsed] =
     in.via(
-        ActorFlow.ask(counter)(
-          (inc, replyTo: ActorRef[CounterActor.State]) =>
+        ActorFlow
+          .ask[Increment, CounterActor.Command, CounterActor.State](
+            parallelism = 2
+          )(counter) { (inc, replyTo: ActorRef[CounterActor.State]) =>
             CounterActor.Increment(inc.v, replyTo)
-        )
+          }
       )
       .map(stateAdapter)
 
