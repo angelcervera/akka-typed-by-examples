@@ -5,9 +5,9 @@ import akka.actor.typed.{ActorRef, ActorTags, Behavior}
 
 object CounterActor {
 
-  trait Protocol
-  trait Command extends Protocol
-  trait Reply extends Protocol
+  sealed trait Protocol
+  sealed trait Command extends Protocol
+  sealed trait Reply extends Protocol
 
   final case class State(events: Long, acc: Long) extends Reply
 

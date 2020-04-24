@@ -7,7 +7,7 @@ import example.server.CounterActor._
 
 object CounterPersistenceActor {
 
-  trait Event extends Protocol
+  sealed trait Event
   final case class Incremented(v: Long) extends Event
 
   def apply(counterId: String, delayNanos: Long): Behavior[Command] =
